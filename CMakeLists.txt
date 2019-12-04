@@ -10,13 +10,14 @@ endif()
 
 set(CMAKE_C_FLAGS "-Wall -Wextra")
 set(CMAKE_C_FLAGS_DEBUG "-g -O0 -fsanitize=address -fno-omit-frame-pointer")
-set(CMAKE_C_FLAGS_RELEASE "-O3 -s -fno-ident -march=native -flto -DNDEBUG")
+set(CMAKE_C_FLAGS_RELEASE "-O3 -s -fno-ident -march=native -DNDEBUG")
 
-set(CMAKE_C_STANDARD 11)
+set(CMAKE_C_STANDARD 99)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_LIST_DIR}")
 
 add_definitions(-D_POSIX_C_SOURCE=200809L)
+#Apparently I can't get the lstat macros like S_IFLNK without default source
 add_definitions(-D_DEFAULT_SOURCE)
 
 SET(MAIN
@@ -26,8 +27,3 @@ SET(MAIN
 add_executable(lank ${MAIN})
 
 set_property(TARGET lank PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
-
-set(THREADS_PREFER_PTHREAD_FLAG ON)
-find_package(Threads REQUIRED)
-
-target_link_libraries(lank rt Threads::Threads)

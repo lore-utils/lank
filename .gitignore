@@ -54,3 +54,10 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+
+lank
