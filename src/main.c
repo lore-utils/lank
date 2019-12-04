@@ -46,7 +46,7 @@ static void rename_symlink(const char *sym_path, const char *match, const char *
     int error_code = 0;
     size_t error_offset = 0;
 
-    char err_msg[1024];
+    char err_msg[120];
 
     if (temp_path == NULL) {
         goto error;
@@ -71,7 +71,7 @@ static void rename_symlink(const char *sym_path, const char *match, const char *
     match_pattern = pcre2_compile((const unsigned char *) match, strlen(match),
             0, &error_code, &error_offset, NULL);
     if (match_pattern == NULL) {
-        pcre2_get_error_message(error_code, (unsigned char *) err_msg, 1024);
+        pcre2_get_error_message(error_code, (unsigned char *) err_msg, sizeof(err_msg));
         printf("%s\n", err_msg);
         goto error;
     }
