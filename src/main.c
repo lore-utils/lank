@@ -6,6 +6,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <errno.h>
 
 #define PCRE2_CODE_UNIT_WIDTH 8
 #include <pcre2.h>
@@ -128,9 +129,19 @@ error:
 
 static void single_rename(const char *pathname, const char *replacement) {
     struct stat res;
-    if (lstat(pathname, &res) == -1) {
-        perror("lstat");
-        return;
+    int ret;
+    if ((ret = lstat(pathname, &res)) == -1) {
+        if (errno == ENOENT) {
+            //path doesnt exist
+            if (symlink(replacement, pathname) == -1) {
+                perror("symlink");
+            }
+            //no need to replace it, it didnt exist in the first place
+            return;
+        } else {
+            perror("lstat");
+            return;
+        }
     }
 
     if (S_ISLNK(res.st_mode)) {
