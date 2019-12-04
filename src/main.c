@@ -6,6 +6,9 @@
 #include <unistd.h>
 #include <string.h>
 
+#define PCRE2_CODE_UNIT_WIDTH 32
+#include <pcre2.h>
+
 static void print_help(void) {
     printf(
         "lank - a symlink utility for all things symlink\n"
