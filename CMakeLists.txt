@@ -11,6 +11,7 @@ endif()
 set(CMAKE_C_FLAGS "-Wall -Wextra")
 set(CMAKE_C_FLAGS_DEBUG "-g -O0 -fsanitize=address -fno-omit-frame-pointer")
 set(CMAKE_C_FLAGS_RELEASE "-O3 -s -fno-ident -march=native -DNDEBUG")
+set(CMAKE_C_FLAGS_RELEASE "-O3 -s -fno-ident -march=native -DNDEBUG")
 
 set(CMAKE_C_STANDARD 99)
 
@@ -28,6 +29,8 @@ add_executable(lank ${MAIN})
 
 set_property(TARGET lank PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
 
-FIND_PATH(PCRE2_INCLUDE_DIR pcre2.h)
+find_path(${PCRE2_INCLUDE_DIR} pcre2.h)
 
-INCLUDE_DIRECTORIES(${PCRE2_INCLUDE_DIR})
+include_directories(${PCRE2_INCLUDE_DIR})
+
+target_link_libraries(lank "-lpcre2-32")
