@@ -5,7 +5,7 @@ a symlink utility for all things symlink
  - Retarget a single symlink
  - Bulk target rename
  - Regex based bulk target rename
- -
+
 ## Usage
 
 ```
