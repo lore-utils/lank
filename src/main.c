@@ -12,12 +12,20 @@
 static void print_help(void) {
     printf(
         "lank - a symlink utility for all things symlink\n"
-        "Usage: lank SRC DEST\n"
-        "       lank <OPTIONS>\n"
+        "Usage:\n"
+        "    lank SRC DEST\n"
+        "    lank MATCH REPLACEMENT FILES...\n"
+        "    lank <OPTIONS>\n"
         "Options:\n"
-        "-[-h]elp - this message\n"
-        "-[-s]rc - the src symlink file to modify\n"
-        "-[-d]est - the new destination for the input symlink\n"
+        "    -[-s]rc - the src symlink file to modify\n"
+        "    -[-d]est - the new destination for the input symlink\n"
+        "\n"
+        "    -[-m]atch - the regex pattern to apply to the target of the symlinks\n"
+        "    -[-r]eplacement - the replacement pattern for the match\n"
+        "\n"
+        "    -[-h]elp - this message\n"
+        "Notes:\n"
+        "    Uses the PCRE2 regex engine for replacements.\n"
         );
 }
 
@@ -67,6 +75,13 @@ static void handle_file_type(const char *pathname, const char *new_link) {
     //Are we even going to try and rename regular files and/or special files like block devices?
 }
 
+static void batch_rename(const char* match, const char* replacement, const char **symlinks, const size_t n) {
+    printf("match %s replacement %s\n", match, replacement);
+    for (size_t i = 0; i < n; ++i) {
+        printf("%s\n", symlinks[i]);
+    }
+}
+
 int main(int argc, char **argv) {
     if (argc == 1) {
         print_help();
@@ -75,6 +90,8 @@ int main(int argc, char **argv) {
 
     const char *target_symlink = NULL;
     const char *target_dest = NULL;
+    const char *match = NULL;
+    const char *replacement= NULL;
 
     int c;
     while (1) {
@@ -84,10 +101,12 @@ int main(int argc, char **argv) {
             {"help", no_argument, 0, 'h'},
             {"src", required_argument, 0, 's'},
             {"dest", required_argument, 0, 'd'},
+            {"match", required_argument, 0, 'm'},
+            {"replacement", required_argument, 0, 'r'},
             {0, 0, 0, 0}
         };
 
-        c = getopt_long(argc, argv, "hs:d:", long_options, &option_index);
+        c = getopt_long(argc, argv, "hs:d:m:r:", long_options, &option_index);
         if (c == -1)
             break;
 
@@ -98,6 +117,12 @@ int main(int argc, char **argv) {
             case 's':
                 target_symlink = optarg;
                 break;
+            case 'm':
+                match = optarg;
+                break;
+            case 'r':
+                replacement = optarg;
+                break;
             case 'h':
             case '?':
                 print_help();
@@ -105,24 +130,34 @@ int main(int argc, char **argv) {
         }
     }
 
-    if (target_dest == NULL && target_symlink == NULL && argc == 3) {
+    if (argc == 3 && target_dest == NULL && target_symlink) {
         target_symlink = argv[1];
         target_dest = argv[2];
-    } else {
-        //while inform people its not being used
-        if (optind < argc) {
-            printf("ignoring args: ");
-            while (optind < argc) printf("%s ", argv[optind++]);
-            printf("\n");
-        }
-
-        if (target_symlink == NULL || target_dest == NULL) {
-            print_help();
-            exit(EXIT_SUCCESS);
-        }
+    } else if (argc >= 4 && match == NULL && replacement == NULL) {
+        match = argv[0];
+        replacement = argv[1];
+        optind += 2;
     }
 
-    handle_file_type(target_symlink, target_dest);
+
+    if (match == NULL && replacement == NULL && target_symlink != NULL && target_dest != NULL) {
+        //single mode
+        if (optind < argc) {
+            printf("ignoring args: ");
+            while (optind < argc) {
+                printf("%s ", argv[optind++]);
+            }
+            printf("\n");
+        }
+        handle_file_type(target_symlink, target_dest);
+    } else if (match != NULL && replacement != NULL) {
+        //batch mode
+        batch_rename(match, replacement, (const char **)argv+optind, argc-optind);
+    } else {
+        //you messed up
+        print_help();
+        exit(EXIT_SUCCESS);
+    }
 
     return EXIT_SUCCESS;
 }
