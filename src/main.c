@@ -9,7 +9,9 @@
 static void print_help(void) {
     printf(
         "lank - a symlink utility for all things symlink\n"
-        "Usage: lank LINK_NAME TARGET\n"
+        "Usage: lank SRC DEST\n"
+        "       lank <OPTIONS>\n"
+        "Options:\n"
         "-[-h]elp - this message\n"
         "-[-s]rc - the src symlink file to modify\n"
         "-[-d]est - the new destination for the input symlink\n"
@@ -100,16 +102,21 @@ int main(int argc, char **argv) {
         }
     }
 
-    //while inform people its not being used
-    if (optind < argc) {
-        printf("ignoring args: ");
-        while (optind < argc) printf("%s ", argv[optind++]);
-        printf("\n");
-    }
+    if (target_dest == NULL && target_symlink == NULL && argc == 3) {
+        target_symlink = argv[1];
+        target_dest = argv[2];
+    } else {
+        //while inform people its not being used
+        if (optind < argc) {
+            printf("ignoring args: ");
+            while (optind < argc) printf("%s ", argv[optind++]);
+            printf("\n");
+        }
 
-    if (target_symlink == NULL || target_dest == NULL) {
-        print_help();
-        exit(EXIT_SUCCESS);
+        if (target_symlink == NULL || target_dest == NULL) {
+            print_help();
+            exit(EXIT_SUCCESS);
+        }
     }
 
     handle_file_type(target_symlink, target_dest);
