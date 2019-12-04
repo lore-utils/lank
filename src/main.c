@@ -7,7 +7,7 @@
 #include <string.h>
 #include <stdint.h>
 
-#define PCRE2_CODE_UNIT_WIDTH 32
+#define PCRE2_CODE_UNIT_WIDTH 8
 #include <pcre2.h>
 
 static void print_help(void) {
@@ -68,26 +68,26 @@ static void rename_symlink(const char *sym_path, const char *match, const char *
     }
     temp_dest[res.st_size] = '\0';
 
-    match_pattern = pcre2_compile((const unsigned int *) match, strlen(match),
-            (uint32_t) PCRE2_ZERO_TERMINATED, &error_code, &error_offset, NULL);
+    match_pattern = pcre2_compile((const unsigned char *) match, strlen(match),
+            0, &error_code, &error_offset, NULL);
     if (match_pattern == NULL) {
-        pcre2_get_error_message(error_code, (unsigned int *) err_msg, 1024);
+        pcre2_get_error_message(error_code, (unsigned char *) err_msg, 1024);
         printf("%s\n", err_msg);
         goto error;
     }
 
-    pcre2_substitute(match_pattern, (const unsigned int *) temp_dest, strlen(temp_dest), 0,
+    pcre2_substitute(match_pattern, (const unsigned char *) temp_dest, strlen(temp_dest), 0,
             PCRE2_SUBSTITUTE_GLOBAL | PCRE2_SUBSTITUTE_EXTENDED | PCRE2_SUBSTITUTE_OVERFLOW_LENGTH,
-            NULL, NULL, (const unsigned int *) replacement, strlen(replacement), NULL, &new_dest_len);
+            NULL, NULL, (const unsigned char *) replacement, strlen(replacement), NULL, &new_dest_len);
 
     new_link = malloc(new_dest_len + 1);
     if (new_link == NULL) {
         goto error;
     }
 
-    if (pcre2_substitute(match_pattern, (const unsigned int *) temp_dest, strlen(temp_dest), 0,
+    if (pcre2_substitute(match_pattern, (const unsigned char *) temp_dest, strlen(temp_dest), 0,
                 PCRE2_SUBSTITUTE_GLOBAL | PCRE2_SUBSTITUTE_EXTENDED | PCRE2_SUBSTITUTE_OVERFLOW_LENGTH,
-                NULL, NULL, (const unsigned int *) replacement, strlen(replacement), (unsigned int *) new_link, &new_dest_len) < 0) {
+                NULL, NULL, (const unsigned char *) replacement, strlen(replacement), (unsigned char *) new_link, &new_dest_len) < 0) {
         goto error;
     }
 

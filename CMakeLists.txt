@@ -33,4 +33,4 @@ find_path(${PCRE2_INCLUDE_DIR} pcre2.h)
 
 include_directories(${PCRE2_INCLUDE_DIR})
 
-target_link_libraries(lank "-lpcre2-32")
+target_link_libraries(lank "-lpcre2-8")
