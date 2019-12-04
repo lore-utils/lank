@@ -24,5 +24,4 @@ Options:
     -[-h]elp - this message
 Notes:
     Uses the PCRE2 regex engine for replacements.
-    ```
-
+```
