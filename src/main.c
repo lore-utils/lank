@@ -10,7 +10,10 @@ static void print_help(void) {
     printf(
         "lank - a symlink utility for all things symlink\n"
         "Usage: lank LINK_NAME TARGET\n"
-        "-[-h]elp - this message\n");
+        "-[-h]elp - this message\n"
+        "-[-s]rc - the src symlink file to modify\n"
+        "-[-d]est - the new destination for the input symlink\n"
+        );
 }
 
 /*
@@ -74,20 +77,20 @@ int main(int argc, char **argv) {
 
         static struct option long_options[] = {
             {"help", no_argument, 0, 'h'},
-            {"input", required_argument, 0, 'i'},
-            {"output", required_argument, 0, 'o'},
+            {"src", required_argument, 0, 's'},
+            {"dest", required_argument, 0, 'd'},
             {0, 0, 0, 0}
         };
 
-        c = getopt_long(argc, argv, "hi:o:", long_options, &option_index);
+        c = getopt_long(argc, argv, "hs:d:", long_options, &option_index);
         if (c == -1)
             break;
 
         switch (c) {
-            case 'o':
+            case 'd':
                 target_dest = optarg;
                 break;
-            case 'i':
+            case 's':
                 target_symlink = optarg;
                 break;
             case 'h':
