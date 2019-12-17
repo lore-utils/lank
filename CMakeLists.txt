@@ -28,7 +28,7 @@ add_executable(lank ${MAIN})
 
 set_property(TARGET lank PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
 
-find_path(${PCRE2_INCLUDE_DIR} pcre2.h)
+find_path(PCRE2_INCLUDE_DIR NAMES pcre2.h)
 
 include_directories(${PCRE2_INCLUDE_DIR})
 
